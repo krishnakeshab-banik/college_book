@@ -2153,12 +2153,33 @@ body {
   }
 }
 
+/* Mobile Header & Bottom Nav (Instagram style) - hidden on desktop */
+.mobile-header {
+  display: none;
+}
+.mobile-bottom-nav {
+  display: none;
+}
+.chat-back-btn {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .app-container {
     grid-template-columns: 1fr;
+    padding-top: 56px;
+    padding-bottom: 60px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
   }
   .sidebar {
     display: none;
+  }
+  .main-content-wrapper {
+    height: auto;
+    overflow-y: visible;
+    padding: 16px;
   }
   .layout-grid {
     grid-template-columns: 1fr;
@@ -2178,5 +2199,162 @@ body {
   }
   .timeline-node:nth-child(even) {
     flex-direction: row;
+  }
+
+  /* Mobile Top Header styling */
+  .mobile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-glass);
+    padding: 0 16px;
+    z-index: 999;
+  }
+
+  .mobile-logo-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mobile-logo-container .logo-text {
+    font-size: 1.25rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #0f172a 0%, #4f46e5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .mobile-logo-container .logo-icon {
+    color: var(--primary);
+  }
+
+  .mobile-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .mobile-action-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    cursor: pointer;
+    position: relative;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: var(--primary);
+    color: white;
+    font-size: 0.62rem;
+    font-weight: 700;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-badge.pink {
+    background: var(--accent);
+  }
+
+  /* Bottom Nav styling */
+  .mobile-bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: #ffffff;
+    border-top: 1px solid var(--border-glass);
+    z-index: 999;
+  }
+
+  .mobile-nav-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+  }
+
+  .mobile-nav-btn.active {
+    color: var(--primary);
+  }
+
+  .mobile-nav-btn.create {
+    color: var(--primary);
+  }
+
+  .mobile-profile-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid transparent;
+  }
+
+  .mobile-nav-btn.active .mobile-profile-avatar {
+    border-color: var(--primary);
+  }
+
+  /* Mobile Messages details */
+  .messages-container {
+    height: calc(100vh - 144px);
+    border-radius: 16px;
+  }
+
+  .chat-back-btn {
+    display: flex !important;
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    cursor: pointer;
+    padding: 4px;
+    margin-right: 8px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .messages-container.has-active-chat .conversations-sidebar {
+    display: none;
+  }
+
+  .messages-container:not(.has-active-chat) .active-chat-area {
+    display: none;
+  }
+
+  .messages-container:not(.has-active-chat) .no-chat-selected {
+    display: none;
+  }
+
+  .messages-container:not(.has-active-chat) .conversations-sidebar {
+    width: 100%;
+  }
+
+  .messages-container.has-active-chat .active-chat-area {
+    width: 100%;
   }
 }

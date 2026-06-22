@@ -7,7 +7,10 @@ import {
   MessageCircle,
   FolderHeart,
   UserPlus,
-  Sparkles
+  Sparkles,
+  Home,
+  Compass,
+  PlusCircle
 } from 'lucide-react';
 
 // Data
@@ -292,6 +295,26 @@ export default function App() {
 
   return (
     <div className="app-container">
+      {/* Mobile Top Header (Instagram style) */}
+      <header className="mobile-header">
+        <div className="mobile-logo-container">
+          <Sparkles className="logo-icon" size={20} />
+          <span className="logo-text">CollegeBook</span>
+        </div>
+        <div className="mobile-header-actions">
+          <button className="mobile-action-btn" onClick={() => setActiveTab('notifications')}>
+            <BellRing size={22} />
+            {notifications.filter(n => !n.read).length > 0 && (
+              <span className="mobile-badge pink">{notifications.filter(n => !n.read).length}</span>
+            )}
+          </button>
+          <button className="mobile-action-btn" onClick={() => { setActiveTab('messages'); setActiveChatFriend(null); }}>
+            <MessageCircle size={22} />
+            <span className="mobile-badge">3</span>
+          </button>
+        </div>
+      </header>
+
       {/* Sidebar Navigation */}
       <Sidebar 
         activeTab={activeTab} 
@@ -461,6 +484,44 @@ export default function App() {
           onCreateAlbum={handleCreateAlbum}
         />
       )}
+
+      {/* Mobile Bottom Navigation Bar (Instagram style) */}
+      <nav className="mobile-bottom-nav">
+        <button 
+          className={`mobile-nav-btn ${activeTab === 'home' ? 'active' : ''}`}
+          onClick={() => { setActiveTab('home'); setSelectedAlbum(null); }}
+        >
+          <Home size={22} />
+        </button>
+        <button 
+          className={`mobile-nav-btn ${activeTab === 'explore' ? 'active' : ''}`}
+          onClick={() => { setActiveTab('explore'); setSelectedAlbum(null); }}
+        >
+          <Compass size={22} />
+        </button>
+        <button 
+          className="mobile-nav-btn create"
+          onClick={() => setShowCreateAlbumModal(true)}
+        >
+          <PlusCircle size={24} />
+        </button>
+        <button 
+          className={`mobile-nav-btn ${activeTab === 'albums' ? 'active' : ''}`}
+          onClick={() => setActiveTab('albums')}
+        >
+          <FolderHeart size={22} />
+        </button>
+        <button 
+          className={`mobile-nav-btn ${activeTab === 'profile' ? 'active' : ''}`}
+          onClick={() => { setActiveTab('profile'); setSelectedAlbum(null); }}
+        >
+          <img 
+            src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=80&q=80" 
+            alt="Profile" 
+            className="mobile-profile-avatar"
+          />
+        </button>
+      </nav>
     </div>
   );
 }

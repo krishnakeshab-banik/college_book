@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, MessageSquare } from 'lucide-react';
+import { Send, MessageSquare, ChevronLeft } from 'lucide-react';
 
 export default function MessagesView({ 
   friends, 
@@ -64,7 +64,7 @@ export default function MessagesView({
   const activeThread = activeChatFriend ? (messages[activeChatFriend.id] || []) : [];
 
   return (
-    <div className="messages-container glass">
+    <div className={`messages-container glass ${activeChatFriend ? 'has-active-chat' : ''}`}>
       {/* Conversations List Sidebar */}
       <div className="conversations-sidebar">
         <div className="convos-header">Conversations</div>
@@ -102,6 +102,9 @@ export default function MessagesView({
       {activeChatFriend ? (
         <div className="active-chat-area">
           <header className="chat-header">
+            <button className="chat-back-btn" onClick={() => setActiveChatFriend(null)}>
+              <ChevronLeft size={20} />
+            </button>
             <img src={activeChatFriend.avatar} alt={activeChatFriend.name} className="chat-header-avatar" />
             <div>
               <div className="chat-header-name">{activeChatFriend.name}</div>
