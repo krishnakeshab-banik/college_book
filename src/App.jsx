@@ -31,7 +31,6 @@ import FriendsView from './components/FriendsView';
 import MessagesView from './components/MessagesView';
 import ProfileView from './components/ProfileView';
 import CreateAlbumModal from './components/CreateAlbumModal';
-import CosmicBackground from './components/CosmicBackground';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
@@ -293,10 +292,6 @@ export default function App() {
 
   return (
     <div className="app-container">
-      <div className="cosmic-background-wrapper">
-        <div className="cosmic-background-image"></div>
-      </div>
-      <CosmicBackground />
       {/* Sidebar Navigation */}
       <Sidebar 
         activeTab={activeTab} 

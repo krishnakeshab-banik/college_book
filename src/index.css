@@ -43,49 +43,16 @@
 
 body {
   font-family: var(--font-family);
-  background-color: #020205;
+  background-color: #06050b;
+  background-image: 
+    radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(236, 72, 153, 0.04) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.03) 0%, transparent 60%);
+  background-attachment: fixed;
   color: var(--text-main);
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
-}
-
-/* GPU-Accelerated Background Image Drift Animation */
-.cosmic-background-wrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -2;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.cosmic-background-image {
-  position: absolute;
-  top: -5%;
-  left: -5%;
-  width: 110%;
-  height: 110%;
-  background-image: url('/assets/cosmic_bg.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  animation: cosmicDrift 18s ease-in-out infinite alternate;
-  will-change: transform;
-}
-
-@keyframes cosmicDrift {
-  0% {
-    transform: scale(1) translate(0, 0) rotate(0deg);
-  }
-  50% {
-    transform: scale(1.05) translate(-2%, 1%) rotate(0.4deg);
-  }
-  100% {
-    transform: scale(1.02) translate(1%, -1%) rotate(-0.4deg);
-  }
 }
 
 /* Glassmorphism Classes */

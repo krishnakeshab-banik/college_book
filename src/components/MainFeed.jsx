@@ -9,7 +9,8 @@ import {
   Star,
   Play,
   SlidersHorizontal,
-  LayoutGrid
+  LayoutGrid,
+  BadgeCheck
 } from 'lucide-react';
 
 export default function MainFeed({
@@ -156,7 +157,10 @@ export default function MainFeed({
                   className="moment-user-avatar" 
                 />
                 <div>
-                  <div className="moment-user-name">{moment.user.name}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span className="moment-user-name">{moment.user.name}</span>
+                    <BadgeCheck size={14} style={{ color: 'var(--primary)', fill: 'rgba(99, 102, 241, 0.15)' }} title="Verified Campus Coordinator" />
+                  </div>
                   <div className="moment-user-univ">{moment.user.university}</div>
                 </div>
                 <span className="moment-time">{moment.timestamp}</span>
