@@ -2564,3 +2564,13 @@ body {
     overflow-y: auto;
   }
 }
+
+/* Text-only post modal styling */
+.post-details-modal.no-image {
+  max-width: 520px;
+}
+.post-details-layout.no-image {
+  grid-template-columns: 1fr;
+  min-height: 400px;
+  max-height: 480px;
+}

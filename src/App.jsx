@@ -196,7 +196,7 @@ export default function App() {
         avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80'
       },
       timestamp: 'Just now',
-      image: img || 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80',
+      image: img || '',
       likes: 0,
       commentsCount: 0,
       hasLiked: false,

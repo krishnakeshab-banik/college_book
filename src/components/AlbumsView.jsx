@@ -20,7 +20,7 @@ export default function AlbumsView({
   const [filter, setFilter] = useState('All');
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [newPhotoCaption, setNewPhotoCaption] = useState('');
-  const [newPhotoUrl, setNewPhotoUrl] = useState('');
+  const [newPhotoBase64, setNewPhotoBase64] = useState('');
   const [commentText, setCommentText] = useState('');
   const [albumComments, setAlbumComments] = useState({
     'goa-trip-2k24': [
@@ -57,15 +57,23 @@ export default function AlbumsView({
     }));
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setNewPhotoBase64(event.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSimulatedUpload = (e) => {
     e.preventDefault();
-    if (!newPhotoCaption) return;
-
-    // Use a fallback random unsplash photo if no URL provided
-    const imgUrl = newPhotoUrl.trim() || `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000000)}?auto=format&fit=crop&w=800&q=80`;
+    if (!newPhotoCaption || !newPhotoBase64) return;
 
     const newMediaItem = {
-      url: imgUrl,
+      url: newPhotoBase64,
       caption: newPhotoCaption,
       addedBy: 'Aditya Verma'
     };
@@ -85,7 +93,7 @@ export default function AlbumsView({
 
     // Reset upload form
     setNewPhotoCaption('');
-    setNewPhotoUrl('');
+    setNewPhotoBase64('');
     setShowUploadModal(false);
   };
 
@@ -238,13 +246,13 @@ export default function AlbumsView({
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Image URL (Optional)</label>
+                  <label className="form-label">Select Photo</label>
                   <input 
-                    type="text" 
+                    type="file" 
+                    accept="image/*"
                     className="form-input" 
-                    placeholder="Leave empty for a random high-quality photo"
-                    value={newPhotoUrl}
-                    onChange={(e) => setNewPhotoUrl(e.target.value)}
+                    onChange={handleFileChange}
+                    required
                   />
                 </div>
                 <div className="form-actions">

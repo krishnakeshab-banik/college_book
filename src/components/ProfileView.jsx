@@ -141,8 +141,33 @@ export default function ProfileView({ userStats, moments, albums }) {
           ))}
 
           {activeSubTab === 'bookmarks' && bookmarkedMoments.map((moment) => (
-            <div key={moment.id} className="profile-media-card glass">
-              <img src={moment.image} alt={moment.user.name} className="profile-media-img" />
+            <div key={moment.id} className="profile-media-card glass" style={{ minHeight: '150px' }}>
+              {moment.image ? (
+                <img src={moment.image} alt={moment.user.name} className="profile-media-img" />
+              ) : (
+                <div style={{
+                  padding: '16px',
+                  height: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'linear-gradient(135deg, var(--bg-card) 0%, rgba(99, 102, 241, 0.05) 100%)',
+                  textAlign: 'center'
+                }}>
+                  <p style={{
+                    fontSize: '0.8rem',
+                    color: 'var(--text-main)',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 4,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    lineHeight: '1.4',
+                    fontWeight: '500'
+                  }}>
+                    {moment.description}
+                  </p>
+                </div>
+              )}
               <div className="profile-media-overlay">
                 <div className="profile-stat-icon-btn">
                   <Heart size={14} fill="white" />

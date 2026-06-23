@@ -15,16 +15,18 @@ export default function PostDetailsModal({ moment, onClose, onLike, onBookmark, 
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content post-details-modal glass" onClick={(e) => e.stopPropagation()}>
+      <div className={`modal-content post-details-modal glass ${!moment.image ? 'no-image' : ''}`} onClick={(e) => e.stopPropagation()}>
         <button className="modal-close-btn" onClick={onClose}>
           <X size={18} />
         </button>
 
-        <div className="post-details-layout">
-          {/* Left Side: Post Image */}
-          <div className="post-details-media">
-            <img src={moment.image} alt="Memory" className="post-details-img" />
-          </div>
+        <div className={`post-details-layout ${!moment.image ? 'no-image' : ''}`}>
+          {/* Left Side: Post Image (Only if present) */}
+          {moment.image && (
+            <div className="post-details-media">
+              <img src={moment.image} alt="Memory" className="post-details-img" />
+            </div>
+          )}
 
           {/* Right Side: Details & Comments Feed */}
           <div className="post-details-info-panel">
