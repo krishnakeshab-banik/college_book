@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { formatTime } from '../utils/time';
 
 export default function StoryViewer({ activeStoryId, stories, onClose, onStorySeen }) {
   const [currentStoryId, setCurrentStoryId] = useState(activeStoryId);
@@ -108,7 +109,7 @@ export default function StoryViewer({ activeStoryId, stories, onClose, onStorySe
         <div className="story-player-header">
           <img src={currentStory.avatar} alt={currentStory.name} className="story-player-avatar" />
           <span className="story-player-username">{currentStory.name}</span>
-          <span className="story-player-time">{currentSlide.timestamp || 'Just now'}</span>
+          <span className="story-player-time">{formatTime(currentSlide.timestamp)}</span>
           <button className="story-player-close" onClick={onClose}>
             <X size={20} />
           </button>

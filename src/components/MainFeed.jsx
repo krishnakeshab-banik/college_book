@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { formatTime } from '../utils/time';
 import { 
   Heart, 
   MessageCircle, 
@@ -245,7 +246,7 @@ export default function MainFeed({
                   </div>
                   <div className="moment-user-univ">{moment.user.university}</div>
                 </div>
-                <span className="moment-time">{moment.timestamp}</span>
+                <span className="moment-time">{formatTime(moment.timestamp)}</span>
               </div>
 
               {moment.image && (

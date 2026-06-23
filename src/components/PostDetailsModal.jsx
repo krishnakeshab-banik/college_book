@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Heart, Bookmark, X, Send, BadgeCheck, MessageCircle } from 'lucide-react';
+import { formatTime } from '../utils/time';
 
 export default function PostDetailsModal({ moment, onClose, onLike, onBookmark, onAddComment }) {
   const [commentText, setCommentText] = useState('');
@@ -40,7 +41,7 @@ export default function PostDetailsModal({ moment, onClose, onLike, onBookmark, 
                 </div>
                 <div className="moment-user-univ">{moment.user.university}</div>
               </div>
-              <span className="moment-time" style={{ marginLeft: 'auto' }}>{moment.timestamp}</span>
+              <span className="moment-time" style={{ marginLeft: 'auto' }}>{formatTime(moment.timestamp)}</span>
             </div>
 
             {/* Caption */}
@@ -85,7 +86,7 @@ export default function PostDetailsModal({ moment, onClose, onLike, onBookmark, 
                       <div className="comment-body">
                         <div className="comment-user-meta">
                           <span className="comment-user-name">{comment.user}</span>
-                          <span className="comment-time">{comment.time}</span>
+                          <span className="comment-time">{formatTime(comment.time)}</span>
                         </div>
                         <p className="comment-text">{comment.text}</p>
                       </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   MapPin, 
   Calendar, 
@@ -9,6 +9,7 @@ import {
   MessageSquare,
   Plus
 } from 'lucide-react';
+import { formatTime } from '../utils/time';
 
 export default function AlbumsView({ 
   albums, 
@@ -22,16 +23,32 @@ export default function AlbumsView({
   const [newPhotoCaption, setNewPhotoCaption] = useState('');
   const [newPhotoBase64, setNewPhotoBase64] = useState('');
   const [commentText, setCommentText] = useState('');
-  const [albumComments, setAlbumComments] = useState({
-    'goa-trip-2k24': [
-      { user: 'Rohan Verma', text: 'Literally the best 5 days of my life! Let us repeat this next year.', time: '2d ago' },
-      { user: 'Ananya Iyer', text: 'The sunset at Vagator beach was magical. Thanks for capturing this, Aditya!', time: '1d ago' }
-    ],
-    'campus-fest-2024': [
-      { user: 'Diya Sharma', text: 'OMG, who took that video of Rohan dancing on stage? Post it here please! 😂', time: '1d ago' },
-      { user: 'Karthik Iyer', text: 'The organizing team did a stellar job this year.', time: '10h ago' }
-    ]
+  const [albumComments, setAlbumComments] = useState(() => {
+    const saved = localStorage.getItem('college_book_album_comments');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    const initialAlbumComments = {
+      'goa-trip-2k24': [
+        { user: 'Rohan Verma', text: 'Literally the best 5 days of my life! Let us repeat this next year.', time: '2d ago' },
+        { user: 'Ananya Iyer', text: 'The sunset at Vagator beach was magical. Thanks for capturing this, Aditya!', time: '1d ago' }
+      ],
+      'campus-fest-2024': [
+        { user: 'Diya Sharma', text: 'OMG, who took that video of Rohan dancing on stage? Post it here please! 😂', time: '1d ago' },
+        { user: 'Karthik Iyer', text: 'The organizing team did a stellar job this year.', time: '10h ago' }
+      ]
+    };
+    localStorage.setItem('college_book_album_comments', JSON.stringify(initialAlbumComments));
+    return initialAlbumComments;
   });
+
+  useEffect(() => {
+    localStorage.setItem('college_book_album_comments', JSON.stringify(albumComments));
+  }, [albumComments]);
 
   const categories = ['All', 'Trips', 'Festivals', 'Hostel'];
 
@@ -104,7 +121,7 @@ export default function AlbumsView({
     const newComment = {
       user: 'Aditya Verma',
       text: commentText,
-      time: 'Just now'
+      time: new Date().toISOString()
     };
 
     const albumId = selectedAlbum.id;
@@ -204,7 +221,7 @@ export default function AlbumsView({
                 <div key={i} className="glass" style={{ padding: '12px 16px', borderRadius: '12px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                     <span style={{ fontSize: '0.82rem', fontWeight: '700' }}>{c.user}</span>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{c.time}</span>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{formatTime(c.time)}</span>
                   </div>
                   <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{c.text}</p>
                 </div>
