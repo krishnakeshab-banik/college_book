@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { formatTime } from '../utils/time';
 import { 
   Heart, 
   MessageCircle, 
@@ -16,6 +17,7 @@ import {
 
 export default function MainFeed({
   stories,
+  seenStories,
   featuredMemory,
   moments,
   onStoryClick,
@@ -53,7 +55,9 @@ export default function MainFeed({
     <div className="main-content">
       {/* Stories Section */}
       <section className="stories-container">
-        {stories.map((story) => {
+        {stories
+          .filter(story => story.isAdd || (story.slides && story.slides.length > 0))
+          .map((story) => {
           if (story.isAdd) {
             return (
               <div key={story.id} className="story-card-wrapper" onClick={onAddStoryClick}>
@@ -66,11 +70,12 @@ export default function MainFeed({
               </div>
             );
           }
+          const isSeen = seenStories && seenStories.includes(story.id);
           return (
             <div key={story.id} className="story-card-wrapper" onClick={() => onStoryClick(story)}>
               <div 
                 className="story-ring-outer" 
-                style={{ background: story.glow || 'var(--border-glass-light)' }}
+                style={{ background: isSeen ? 'var(--border-glass-light)' : (story.glow || 'var(--border-glass-light)') }}
               >
                 <div className="story-ring-inner">
                   <img src={story.avatar} alt={story.name} className="story-avatar-img" />
@@ -241,32 +246,34 @@ export default function MainFeed({
                   </div>
                   <div className="moment-user-univ">{moment.user.university}</div>
                 </div>
-                <span className="moment-time">{moment.timestamp}</span>
+                <span className="moment-time">{formatTime(moment.timestamp)}</span>
               </div>
 
-              <div className="moment-img-container" onClick={() => onMomentClick(moment)}>
-                <img src={moment.image} alt="Memory" className="moment-img" />
-                {moment.id === 'moment-2' && (
-                  <div style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: '44px',
-                    height: '44px',
-                    borderRadius: '50%',
-                    background: 'rgba(255, 255, 255, 0.25)',
-                    backdropFilter: 'blur(4px)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
-                    border: '1px solid rgba(255, 255, 255, 0.4)'
-                  }}>
-                    <Play size={18} fill="white" style={{ marginLeft: '2px' }} />
-                  </div>
-                )}
-              </div>
+              {moment.image && (
+                <div className="moment-img-container" onClick={() => onMomentClick(moment)}>
+                  <img src={moment.image} alt="Memory" className="moment-img" />
+                  {moment.id === 'moment-2' && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      width: '44px',
+                      height: '44px',
+                      borderRadius: '50%',
+                      background: 'rgba(255, 255, 255, 0.25)',
+                      backdropFilter: 'blur(4px)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      border: '1px solid rgba(255, 255, 255, 0.4)'
+                    }}>
+                      <Play size={18} fill="white" style={{ marginLeft: '2px' }} />
+                    </div>
+                  )}
+                </div>
+              )}
 
               <p className="moment-caption">{moment.description}</p>
 

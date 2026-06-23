@@ -36,6 +36,7 @@ import ProfileView from './components/ProfileView';
 import CreateAlbumModal from './components/CreateAlbumModal';
 import PostDetailsModal from './components/PostDetailsModal';
 import AddStoryModal from './components/AddStoryModal';
+import { formatTime } from './utils/time';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
@@ -96,13 +97,98 @@ export default function App() {
     return initialStories;
   };
   
+  const getInitialMessages = () => {
+    const saved = localStorage.getItem('college_book_messages');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    localStorage.setItem('college_book_messages', JSON.stringify(initialMessages));
+    return initialMessages;
+  };
+
+  const getInitialAlbums = () => {
+    const saved = localStorage.getItem('college_book_albums');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    localStorage.setItem('college_book_albums', JSON.stringify(initialAlbums));
+    return initialAlbums;
+  };
+
+  const getInitialFriends = () => {
+    const saved = localStorage.getItem('college_book_friends');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    localStorage.setItem('college_book_friends', JSON.stringify(initialActiveFriends));
+    return initialActiveFriends;
+  };
+
+  const getInitialFeaturedMemory = () => {
+    const saved = localStorage.getItem('college_book_featured_memory');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    localStorage.setItem('college_book_featured_memory', JSON.stringify(initialFeaturedMemory));
+    return initialFeaturedMemory;
+  };
+
+  const getInitialNotifications = () => {
+    const saved = localStorage.getItem('college_book_notifications');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    const defaultNotifs = [
+      { id: 1, type: 'like', user: 'Ananya Iyer', text: 'liked your photo in Goa Trip 2K24', time: '5m ago', read: false },
+      { id: 2, type: 'comment', user: 'Rohan Verma', text: 'commented: "Literally the best 5 days of my life!"', time: '2h ago', read: false },
+      { id: 3, type: 'collab', user: 'Simran Kaur', text: 'invited you to collaborate on Spiti Valley Road Trip', time: '1d ago', read: true },
+      { id: 4, type: 'request', user: 'Sanya Malhotra', text: 'sent you a friend request', time: '2d ago', read: true, action: true }
+    ];
+    localStorage.setItem('college_book_notifications', JSON.stringify(defaultNotifs));
+    return defaultNotifs;
+  };
+
   // State
-  const [friends, setFriends] = useState(initialActiveFriends);
+  const [friends, setFriends] = useState(getInitialFriends);
   const [stories, setStories] = useState(getInitialStories);
-  const [featuredMemory, setFeaturedMemory] = useState(initialFeaturedMemory);
+  const [featuredMemory, setFeaturedMemory] = useState(getInitialFeaturedMemory);
   const [moments, setMoments] = useState(getInitialMoments);
-  const [albums, setAlbums] = useState(initialAlbums);
-  const [messages, setMessages] = useState(initialMessages);
+  const [albums, setAlbums] = useState(getInitialAlbums);
+  const [messages, setMessages] = useState(getInitialMessages);
+  
+  const [seenStories, setSeenStories] = useState(() => {
+    const saved = localStorage.getItem('college_book_seen_stories');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const handleStorySeen = (storyId) => {
+    setSeenStories(prev => {
+      if (prev.includes(storyId)) return prev;
+      const updated = [...prev, storyId];
+      localStorage.setItem('college_book_seen_stories', JSON.stringify(updated));
+      return updated;
+    });
+  };
   
   // Active selected states
   const [activeChatFriend, setActiveChatFriend] = useState(null);
@@ -115,13 +201,8 @@ export default function App() {
   const [showAddStoryModal, setShowAddStoryModal] = useState(false);
   const [rightPanelSearch, setRightPanelSearch] = useState('');
 
-  // Notifications Mock Data
-  const [notifications, setNotifications] = useState([
-    { id: 1, type: 'like', user: 'Ananya Iyer', text: 'liked your photo in Goa Trip 2K24', time: '5m ago', read: false },
-    { id: 2, type: 'comment', user: 'Rohan Verma', text: 'commented: "Literally the best 5 days of my life!"', time: '2h ago', read: false },
-    { id: 3, type: 'collab', user: 'Simran Kaur', text: 'invited you to collaborate on Spiti Valley Road Trip', time: '1d ago', read: true },
-    { id: 4, type: 'request', user: 'Sanya Malhotra', text: 'sent you a friend request', time: '2d ago', read: true, action: true }
-  ]);
+  // Notifications
+  const [notifications, setNotifications] = useState(getInitialNotifications);
 
   // Actions
   const handleLikeFeatured = () => {
@@ -181,8 +262,8 @@ export default function App() {
         university: 'Lovely Professional University',
         avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80'
       },
-      timestamp: 'Just now',
-      image: img || 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80',
+      timestamp: new Date().toISOString(),
+      image: img || '',
       likes: 0,
       commentsCount: 0,
       hasLiked: false,
@@ -198,7 +279,7 @@ export default function App() {
       user: 'Aditya Verma',
       avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=80&q=80',
       text: text,
-      time: 'Just now'
+      time: new Date().toISOString()
     };
     setMoments(prev => prev.map(m => {
       if (m.id === momentId) {
@@ -223,7 +304,7 @@ export default function App() {
       const newSlide = {
         url: img,
         caption: caption || 'Class of 2024! 🎓',
-        timestamp: 'Just now'
+        timestamp: new Date().toISOString()
       };
       if (userStoryIdx > -1) {
         const updatedStories = [...prev];
@@ -265,6 +346,26 @@ export default function App() {
     localStorage.setItem('college_book_stories', JSON.stringify(stories));
   }, [stories]);
 
+  useEffect(() => {
+    localStorage.setItem('college_book_messages', JSON.stringify(messages));
+  }, [messages]);
+
+  useEffect(() => {
+    localStorage.setItem('college_book_albums', JSON.stringify(albums));
+  }, [albums]);
+
+  useEffect(() => {
+    localStorage.setItem('college_book_friends', JSON.stringify(friends));
+  }, [friends]);
+
+  useEffect(() => {
+    localStorage.setItem('college_book_notifications', JSON.stringify(notifications));
+  }, [notifications]);
+
+  useEffect(() => {
+    localStorage.setItem('college_book_featured_memory', JSON.stringify(featuredMemory));
+  }, [featuredMemory]);
+
   const handleFriendChatClick = (friend) => {
     setActiveChatFriend(friend);
     setActiveTab('messages');
@@ -305,6 +406,7 @@ export default function App() {
         return (
           <MainFeed 
             stories={stories}
+            seenStories={seenStories}
             featuredMemory={featuredMemory}
             moments={moments}
             onStoryClick={setActiveStory}
@@ -626,8 +728,10 @@ export default function App() {
       {/* Global Story Viewer Overlay */}
       {activeStory && (
         <StoryViewer 
-          story={activeStory} 
-          onClose={() => setActiveStory(null)} 
+          activeStoryId={activeStory.id}
+          stories={stories.filter(s => !s.isAdd && s.slides && s.slides.length > 0)}
+          onClose={() => setActiveStory(null)}
+          onStorySeen={handleStorySeen}
         />
       )}
 

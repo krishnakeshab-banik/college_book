@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Heart, Bookmark, X, Send, BadgeCheck, MessageCircle } from 'lucide-react';
+import { formatTime } from '../utils/time';
 
 export default function PostDetailsModal({ moment, onClose, onLike, onBookmark, onAddComment }) {
   const [commentText, setCommentText] = useState('');
@@ -15,16 +16,18 @@ export default function PostDetailsModal({ moment, onClose, onLike, onBookmark, 
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content post-details-modal glass" onClick={(e) => e.stopPropagation()}>
+      <div className={`modal-content post-details-modal glass ${!moment.image ? 'no-image' : ''}`} onClick={(e) => e.stopPropagation()}>
         <button className="modal-close-btn" onClick={onClose}>
           <X size={18} />
         </button>
 
-        <div className="post-details-layout">
-          {/* Left Side: Post Image */}
-          <div className="post-details-media">
-            <img src={moment.image} alt="Memory" className="post-details-img" />
-          </div>
+        <div className={`post-details-layout ${!moment.image ? 'no-image' : ''}`}>
+          {/* Left Side: Post Image (Only if present) */}
+          {moment.image && (
+            <div className="post-details-media">
+              <img src={moment.image} alt="Memory" className="post-details-img" />
+            </div>
+          )}
 
           {/* Right Side: Details & Comments Feed */}
           <div className="post-details-info-panel">
@@ -38,7 +41,7 @@ export default function PostDetailsModal({ moment, onClose, onLike, onBookmark, 
                 </div>
                 <div className="moment-user-univ">{moment.user.university}</div>
               </div>
-              <span className="moment-time" style={{ marginLeft: 'auto' }}>{moment.timestamp}</span>
+              <span className="moment-time" style={{ marginLeft: 'auto' }}>{formatTime(moment.timestamp)}</span>
             </div>
 
             {/* Caption */}
@@ -83,7 +86,7 @@ export default function PostDetailsModal({ moment, onClose, onLike, onBookmark, 
                       <div className="comment-body">
                         <div className="comment-user-meta">
                           <span className="comment-user-name">{comment.user}</span>
-                          <span className="comment-time">{comment.time}</span>
+                          <span className="comment-time">{formatTime(comment.time)}</span>
                         </div>
                         <p className="comment-text">{comment.text}</p>
                       </div>
