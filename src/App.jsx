@@ -104,6 +104,20 @@ export default function App() {
   const [albums, setAlbums] = useState(initialAlbums);
   const [messages, setMessages] = useState(initialMessages);
   
+  const [seenStories, setSeenStories] = useState(() => {
+    const saved = localStorage.getItem('college_book_seen_stories');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const handleStorySeen = (storyId) => {
+    setSeenStories(prev => {
+      if (prev.includes(storyId)) return prev;
+      const updated = [...prev, storyId];
+      localStorage.setItem('college_book_seen_stories', JSON.stringify(updated));
+      return updated;
+    });
+  };
+  
   // Active selected states
   const [activeChatFriend, setActiveChatFriend] = useState(null);
   const [selectedAlbum, setSelectedAlbum] = useState(null);
@@ -305,6 +319,7 @@ export default function App() {
         return (
           <MainFeed 
             stories={stories}
+            seenStories={seenStories}
             featuredMemory={featuredMemory}
             moments={moments}
             onStoryClick={setActiveStory}
@@ -626,8 +641,10 @@ export default function App() {
       {/* Global Story Viewer Overlay */}
       {activeStory && (
         <StoryViewer 
-          story={activeStory} 
-          onClose={() => setActiveStory(null)} 
+          activeStoryId={activeStory.id}
+          stories={stories.filter(s => !s.isAdd && s.slides && s.slides.length > 0)}
+          onClose={() => setActiveStory(null)}
+          onStorySeen={handleStorySeen}
         />
       )}
 

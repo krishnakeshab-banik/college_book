@@ -16,6 +16,7 @@ import {
 
 export default function MainFeed({
   stories,
+  seenStories,
   featuredMemory,
   moments,
   onStoryClick,
@@ -66,11 +67,12 @@ export default function MainFeed({
               </div>
             );
           }
+          const isSeen = seenStories && seenStories.includes(story.id);
           return (
             <div key={story.id} className="story-card-wrapper" onClick={() => onStoryClick(story)}>
               <div 
                 className="story-ring-outer" 
-                style={{ background: story.glow || 'var(--border-glass-light)' }}
+                style={{ background: isSeen ? 'var(--border-glass-light)' : (story.glow || 'var(--border-glass-light)') }}
               >
                 <div className="story-ring-inner">
                   <img src={story.avatar} alt={story.name} className="story-avatar-img" />
