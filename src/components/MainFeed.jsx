@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Heart, 
   MessageCircle, 
@@ -10,7 +10,8 @@ import {
   Play,
   SlidersHorizontal,
   LayoutGrid,
-  BadgeCheck
+  BadgeCheck,
+  X
 } from 'lucide-react';
 
 export default function MainFeed({
@@ -22,8 +23,32 @@ export default function MainFeed({
   onLikeFeatured,
   onViewFeaturedAlbum,
   onLikeMoment,
-  onBookmarkMoment
+  onBookmarkMoment,
+  onComposeMoment,
+  onMomentClick
 }) {
+  const [description, setDescription] = useState('');
+  const [imageSrc, setImageSrc] = useState('');
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setImageSrc(event.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handlePostSubmit = (e) => {
+    e.preventDefault();
+    if (!description.trim() && !imageSrc) return;
+    onComposeMoment(description.trim(), imageSrc);
+    setDescription('');
+    setImageSrc('');
+  };
+
   return (
     <div className="main-content">
       {/* Stories Section */}
@@ -55,6 +80,59 @@ export default function MainFeed({
             </div>
           );
         })}
+      </section>
+
+      {/* Share Memory Panel (Post Composer) */}
+      <section className="share-memory-panel glass">
+        <form onSubmit={handlePostSubmit}>
+          <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+            <img 
+              src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80" 
+              alt="Aditya Verma" 
+              className="moment-user-avatar" 
+            />
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <textarea 
+                className="chat-input composer-textarea"
+                placeholder="Share a college memory, Aditya..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                style={{ resize: 'none', minHeight: '60px', width: '100%', padding: '12px 14px' }}
+              />
+              
+              {imageSrc && (
+                <div style={{ position: 'relative', width: '120px', height: '120px', borderRadius: '12px', overflow: 'hidden' }}>
+                  <img src={imageSrc} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <button 
+                    type="button" 
+                    className="modal-close-btn"
+                    style={{ top: '6px', right: '6px', width: '20px', height: '20px', background: 'rgba(15, 23, 42, 0.6)', color: 'white', border: 'none' }}
+                    onClick={() => setImageSrc('')}
+                  >
+                    <X size={10} />
+                  </button>
+                </div>
+              )}
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="composer-file-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.82rem', color: 'var(--primary)', fontWeight: '600' }}>
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    style={{ display: 'none' }} 
+                    onChange={handleFileChange} 
+                  />
+                  <ImageIcon size={16} />
+                  <span>Add Photo</span>
+                </label>
+                
+                <button type="submit" className="join-btn" style={{ padding: '8px 18px', borderRadius: '10px' }}>
+                  Share Memory
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
       </section>
 
       {/* Featured Album Section */}
@@ -166,7 +244,7 @@ export default function MainFeed({
                 <span className="moment-time">{moment.timestamp}</span>
               </div>
 
-              <div className="moment-img-container">
+              <div className="moment-img-container" onClick={() => onMomentClick(moment)}>
                 <img src={moment.image} alt="Memory" className="moment-img" />
                 {moment.id === 'moment-2' && (
                   <div style={{
@@ -201,9 +279,9 @@ export default function MainFeed({
                   <span>{moment.likes}</span>
                 </button>
 
-                <button className="moment-action-btn">
+                <button className="moment-action-btn" onClick={() => onMomentClick(moment)}>
                   <MessageCircle size={16} />
-                  <span>{moment.commentsCount}</span>
+                  <span>{moment.comments ? moment.comments.length : moment.commentsCount}</span>
                 </button>
 
                 <button 

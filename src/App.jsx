@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Search, 
   TrendingUp, 
@@ -34,15 +34,73 @@ import FriendsView from './components/FriendsView';
 import MessagesView from './components/MessagesView';
 import ProfileView from './components/ProfileView';
 import CreateAlbumModal from './components/CreateAlbumModal';
+import PostDetailsModal from './components/PostDetailsModal';
+import AddStoryModal from './components/AddStoryModal';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
   
+  // LocalStorage Database Helpers
+  const getInitialMoments = () => {
+    const saved = localStorage.getItem('college_book_moments');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    
+    // Injected comments for rich initial feed
+    const momentsWithComments = initialMoments.map(moment => {
+      if (moment.id === 'moment-1') {
+        return {
+          ...moment,
+          comments: [
+            { user: 'Rohan Verma', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&q=80', text: 'This was literally the best performance ever! EDM night rocks! 🎸⚡', time: '1h ago' },
+            { user: 'Ananya Iyer', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&q=80', text: 'Great capture! I remember losing my voice from screaming.', time: '45m ago' }
+          ]
+        };
+      } else if (moment.id === 'moment-2') {
+        return {
+          ...moment,
+          comments: [
+            { user: 'Diya Sharma', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80', text: 'The guitar session around the fire was so beautiful. Let us plan another trip!', time: '3h ago' },
+            { user: 'Rohan Verma', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&q=80', text: 'Bro Rohan, you promised you wouldn\'t mention that sleep fail! 😂', time: '2h ago' }
+          ]
+        };
+      } else if (moment.id === 'moment-3') {
+        return {
+          ...moment,
+          comments: [
+            { user: 'Simran Kaur', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=80&q=80', text: 'Cold water, high peaks, pure peace. Definitely going back.', time: '6h ago' }
+          ]
+        };
+      }
+      return { ...moment, comments: [] };
+    });
+    localStorage.setItem('college_book_moments', JSON.stringify(momentsWithComments));
+    return momentsWithComments;
+  };
+
+  const getInitialStories = () => {
+    const saved = localStorage.getItem('college_book_stories');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    localStorage.setItem('college_book_stories', JSON.stringify(initialStories));
+    return initialStories;
+  };
+  
   // State
   const [friends, setFriends] = useState(initialActiveFriends);
-  const [stories, setStories] = useState(initialStories);
+  const [stories, setStories] = useState(getInitialStories);
   const [featuredMemory, setFeaturedMemory] = useState(initialFeaturedMemory);
-  const [moments, setMoments] = useState(initialMoments);
+  const [moments, setMoments] = useState(getInitialMoments);
   const [albums, setAlbums] = useState(initialAlbums);
   const [messages, setMessages] = useState(initialMessages);
   
@@ -50,9 +108,11 @@ export default function App() {
   const [activeChatFriend, setActiveChatFriend] = useState(null);
   const [selectedAlbum, setSelectedAlbum] = useState(null);
   const [activeStory, setActiveStory] = useState(null);
+  const [activePostDetails, setActivePostDetails] = useState(null);
   
   // Modals
   const [showCreateAlbumModal, setShowCreateAlbumModal] = useState(false);
+  const [showAddStoryModal, setShowAddStoryModal] = useState(false);
   const [rightPanelSearch, setRightPanelSearch] = useState('');
 
   // Notifications Mock Data
@@ -83,11 +143,15 @@ export default function App() {
   const handleLikeMoment = (momentId) => {
     setMoments(prev => prev.map(m => {
       if (m.id === momentId) {
-        return {
+        const updated = {
           ...m,
           hasLiked: !m.hasLiked,
           likes: m.hasLiked ? m.likes - 1 : m.likes + 1
         };
+        if (activePostDetails && activePostDetails.id === momentId) {
+          setActivePostDetails(updated);
+        }
+        return updated;
       }
       return m;
     }));
@@ -96,13 +160,93 @@ export default function App() {
   const handleBookmarkMoment = (momentId) => {
     setMoments(prev => prev.map(m => {
       if (m.id === momentId) {
-        return {
+        const updated = {
           ...m,
           hasBookmarked: !m.hasBookmarked
         };
+        if (activePostDetails && activePostDetails.id === momentId) {
+          setActivePostDetails(updated);
+        }
+        return updated;
       }
       return m;
     }));
+  };
+
+  const handleComposeMoment = (desc, img) => {
+    const newMoment = {
+      id: `moment-${Date.now()}`,
+      user: {
+        name: 'Aditya Verma',
+        university: 'Lovely Professional University',
+        avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80'
+      },
+      timestamp: 'Just now',
+      image: img || 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80',
+      likes: 0,
+      commentsCount: 0,
+      hasLiked: false,
+      hasBookmarked: false,
+      description: desc,
+      comments: []
+    };
+    setMoments(prev => [newMoment, ...prev]);
+  };
+
+  const handlePostComment = (momentId, text) => {
+    const newComment = {
+      user: 'Aditya Verma',
+      avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=80&q=80',
+      text: text,
+      time: 'Just now'
+    };
+    setMoments(prev => prev.map(m => {
+      if (m.id === momentId) {
+        const updatedComments = [...(m.comments || []), newComment];
+        const updated = {
+          ...m,
+          comments: updatedComments,
+          commentsCount: updatedComments.length
+        };
+        if (activePostDetails && activePostDetails.id === momentId) {
+          setActivePostDetails(updated);
+        }
+        return updated;
+      }
+      return m;
+    }));
+  };
+
+  const handleAddStory = (img, caption) => {
+    setStories(prev => {
+      const userStoryIdx = prev.findIndex(s => s.id === 'user-story');
+      const newSlide = {
+        url: img,
+        caption: caption || 'Class of 2024! 🎓',
+        timestamp: 'Just now'
+      };
+      if (userStoryIdx > -1) {
+        const updatedStories = [...prev];
+        const currentStory = updatedStories[userStoryIdx];
+        updatedStories[userStoryIdx] = {
+          ...currentStory,
+          slides: [newSlide, ...(currentStory.slides || [])]
+        };
+        return updatedStories;
+      } else {
+        const newStory = {
+          id: 'user-story',
+          name: 'Your Story',
+          avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80',
+          glow: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
+          slides: [newSlide]
+        };
+        const updated = [...prev];
+        updated.splice(1, 0, newStory);
+        return updated;
+      }
+    });
+    setShowAddStoryModal(false);
   };
 
   const handleCreateAlbum = (newAlbum) => {
@@ -111,6 +255,15 @@ export default function App() {
     setSelectedAlbum(newAlbum);
     setActiveTab('albums');
   };
+
+  // Sync state changes to localStorage
+  useEffect(() => {
+    localStorage.setItem('college_book_moments', JSON.stringify(moments));
+  }, [moments]);
+
+  useEffect(() => {
+    localStorage.setItem('college_book_stories', JSON.stringify(stories));
+  }, [stories]);
 
   const handleFriendChatClick = (friend) => {
     setActiveChatFriend(friend);
@@ -155,11 +308,13 @@ export default function App() {
             featuredMemory={featuredMemory}
             moments={moments}
             onStoryClick={setActiveStory}
-            onAddStoryClick={() => alert('Add Story feature: Simply upload from your gallery!')}
+            onAddStoryClick={() => setShowAddStoryModal(true)}
             onLikeFeatured={handleLikeFeatured}
             onViewFeaturedAlbum={handleViewFeaturedAlbum}
             onLikeMoment={handleLikeMoment}
             onBookmarkMoment={handleBookmarkMoment}
+            onComposeMoment={handleComposeMoment}
+            onMomentClick={setActivePostDetails}
           />
         );
       case 'albums':
@@ -482,6 +637,25 @@ export default function App() {
           friends={friends}
           onClose={() => setShowCreateAlbumModal(false)}
           onCreateAlbum={handleCreateAlbum}
+        />
+      )}
+
+      {/* Global Post Details Modal */}
+      {activePostDetails && (
+        <PostDetailsModal
+          moment={activePostDetails}
+          onClose={() => setActivePostDetails(null)}
+          onLike={handleLikeMoment}
+          onBookmark={handleBookmarkMoment}
+          onAddComment={handlePostComment}
+        />
+      )}
+
+      {/* Global Add Story Modal */}
+      {showAddStoryModal && (
+        <AddStoryModal
+          onClose={() => setShowAddStoryModal(false)}
+          onAddStory={handleAddStory}
         />
       )}
 
