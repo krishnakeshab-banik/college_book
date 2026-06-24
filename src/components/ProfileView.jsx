@@ -10,7 +10,8 @@ import {
   BadgeCheck,
   Share2,
   Camera,
-  Settings
+  Settings,
+  Eye
 } from 'lucide-react';
 
 export default function ProfileView({ userStats, moments, albums }) {
@@ -20,31 +21,27 @@ export default function ProfileView({ userStats, moments, albums }) {
   const bookmarkedMoments = moments?.filter(m => m.hasBookmarked) || [];
 
   const personalMemories = [
-    { id: 'p1', url: '/assets/graduation.png', likes: 512, comments: 45 },
-    { id: 'p2', url: '/assets/hostel_life.png', likes: 320, comments: 28 },
-    { id: 'p3', url: '/assets/goa_trip.png', likes: 482, comments: 38 },
-    { id: 'p4', url: '/assets/campus_fest.png', likes: 212, comments: 18 },
-    { id: 'p5', url: '/assets/campfire.png', likes: 185, comments: 12 },
-    { id: 'p6', url: '/assets/lake_view.png', likes: 290, comments: 24 }
+    { id: 'p1', url: '/assets/graduation.png', likes: 512, comments: 45, views: '12.4k' },
+    { id: 'p2', url: '/assets/hostel_life.png', likes: 320, comments: 28, views: '8.2k' },
+    { id: 'p3', url: '/assets/goa_trip.png', likes: 482, comments: 38, views: '15.1k' },
+    { id: 'p4', url: '/assets/campus_fest.png', likes: 212, comments: 18, views: '5.6k' },
+    { id: 'p5', url: '/assets/campfire.png', likes: 185, comments: 12, views: '4.1k' },
+    { id: 'p6', url: '/assets/lake_view.png', likes: 290, comments: 24, views: '7.8k' }
   ];
 
   return (
     <div className="main-content" style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
       
-      {/* Cover and profile*/}
+      {/*HEADER BANNER*/}
       <section style={{ display: 'flex', flexDirection: 'column', position: 'relative', borderRadius: '24px', overflow: 'hidden', minHeight: '320px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
-        
-        {/* Background Cover Image */}
         <img 
           src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80" 
           alt="Cover Banner"
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
         />
         
-        {/* Dark Gradient Overlay (Makes white text readable) */}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.4) 40%, transparent 100%)' }}></div>
 
-        {/* Top Right: Edit Cover Button */}
         <div style={{ position: 'absolute', top: '24px', right: '24px', zIndex: 10 }}>
           <button className="glass-hover" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(0,0,0,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '12px', fontWeight: '600', backdropFilter: 'blur(8px)', cursor: 'pointer', transition: 'all 0.2s' }}>
             <Camera size={16} /> Edit Cover
@@ -52,8 +49,6 @@ export default function ProfileView({ userStats, moments, albums }) {
         </div>
 
         <div className="profile-details-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', padding: '32px', position: 'relative', zIndex: 10, marginTop: 'auto' }}>
-          
-          {/* Avatar and Name Group */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
             <img 
               src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80" 
@@ -73,7 +68,6 @@ export default function ProfileView({ userStats, moments, albums }) {
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div style={{ display: 'flex', gap: '12px' }}>
             <button 
               className="glass-hover"
@@ -92,7 +86,6 @@ export default function ProfileView({ userStats, moments, albums }) {
         </div>
       </section>
 
-      {/* summary */}
       <section className="glass" style={{ padding: '24px', borderRadius: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '65%' }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -120,7 +113,6 @@ export default function ProfileView({ userStats, moments, albums }) {
         </div>
       </section>
 
-      {/* Profile Archives tabs */}
       <section className="profile-grid-tabs">
         <div className="tabs-header" style={{ display: 'flex', gap: '24px', borderBottom: '2px solid var(--border-glass-light)', marginBottom: '20px' }}>
           <button 
@@ -144,8 +136,6 @@ export default function ProfileView({ userStats, moments, albums }) {
           >
             <Bookmark size={18} /> Bookmarks
           </button>
-
-          {/* Settings & Privacy*/}
           <button 
             className={`tab-btn ${activeSubTab === 'settings' ? 'active' : ''}`}
             onClick={() => setActiveSubTab('settings')}
@@ -155,45 +145,79 @@ export default function ProfileView({ userStats, moments, albums }) {
           </button>
         </div>
 
-        {/* Tab content grids */}
-        <div className="layout-grid profile-grid-content">
+        <div 
+          className="layout-grid profile-grid-content"
+          style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(3, 1fr)', 
+            gap: '24px', 
+            // Dynamic max-width: Wider for Memories (to fit the sidebar), slimmer for pure square Albums
+            maxWidth: activeSubTab === 'memories' ? '1100px' : '900px', 
+            margin: '0 auto',
+            transition: 'max-width 0.3s ease'
+          }}
+        >
           {activeSubTab === 'memories' && personalMemories.map((med) => (
             <div 
               key={med.id} 
               className="profile-media-card glass glass-hover" 
-              style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', cursor: 'pointer', aspectRatio: '1' }}
+              style={{ display: 'flex', borderRadius: '16px', overflow: 'hidden', cursor: 'pointer', height: '100%' }}
               onMouseEnter={() => setHoveredMemory(med.id)}
               onMouseLeave={() => setHoveredMemory(null)}
             >
-              <img src={med.url} alt="Memory" className="profile-media-img" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              
-              <div className="profile-media-overlay" style={{ 
-                position: 'absolute', inset: 0, 
-                background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%)', 
-                display: 'flex', alignItems: 'flex-end', padding: '20px', gap: '16px', 
-                opacity: hoveredMemory === med.id ? 1 : 0, 
-                transition: 'opacity 0.2s ease-in-out' 
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'white', fontWeight: '600' }}>
-                  <Heart size={18} fill="white" /> <span>{med.likes}</span>
+              {/* Image Section */}
+              <div style={{ flex: 1, position: 'relative', aspectRatio: '1' }}>
+                <img src={med.url} alt="Memory" className="profile-media-img" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      
+                <div className="profile-media-overlay" style={{ 
+                  position: 'absolute', inset: 0, 
+                  background: 'rgba(0,0,0,0.4)', 
+                  display: 'flex', justifyContent: 'center', alignItems: 'center', 
+                  opacity: hoveredMemory === med.id ? 1 : 0, 
+                  transition: 'opacity 0.2s ease-in-out' 
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'white', fontWeight: '700', fontSize: '1.2rem', textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
+                    <Eye size={24} /> <span>{med.views}</span>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'white', fontWeight: '600' }}>
-                  <MessageCircle size={18} fill="white" /> <span>{med.comments}</span>
+              </div>
+              <div style={{ width: '64px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '24px', background: 'var(--border-glass-light)' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: 'var(--text-main)', fontWeight: '600', fontSize: '0.85rem' }}>
+                  <Heart size={20} style={{ color: 'var(--text-secondary)' }} />
+                  <span>{med.likes}</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: 'var(--text-main)', fontWeight: '600', fontSize: '0.85rem' }}>
+                  <MessageCircle size={20} style={{ color: 'var(--text-secondary)' }} />
+                  <span>{med.comments}</span>
                 </div>
               </div>
             </div>
           ))}
 
           {activeSubTab === 'albums' && albums?.filter(a => a.isJoined).map((album) => (
-            <div key={album.id} className="profile-media-card glass glass-hover" style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', cursor: 'pointer', aspectRatio: '1' }}>
+            <div 
+              key={album.id} 
+              className="profile-media-card glass glass-hover" 
+              style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', cursor: 'pointer', aspectRatio: '1' }}
+              onMouseEnter={() => setHoveredMemory(album.id)}
+              onMouseLeave={() => setHoveredMemory(null)}
+            >
               <img src={album.coverImage} alt={album.title} className="profile-media-img" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              <div className="profile-media-overlay" style={{ position: 'absolute', inset: 0, background: 'rgba(15, 23, 42, 0.7)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-                <span style={{ fontSize: '1.1rem', fontWeight: '700', color: 'white', textAlign: 'center' }}>{album.title}</span>
-                <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', marginTop: '6px' }}>{album.media.length} Shared Photos</span>
+            
+              <div className="profile-media-overlay" style={{ 
+                position: 'absolute', inset: 0, 
+                background: 'rgba(15, 23, 42, 0.75)', 
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px',
+                opacity: hoveredMemory === album.id ? 1 : 0, 
+                transition: 'opacity 0.2s ease-in-out' 
+              }}>
+                <span style={{ fontSize: '1.2rem', fontWeight: '700', color: 'white', textAlign: 'center' }}>{album.title}</span>
+                <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', marginTop: '8px' }}>{album.media?.length || 0} Shared Photos</span>
               </div>
             </div>
           ))}
 
+          {/*BOOKMARKS*/}
           {activeSubTab === 'bookmarks' && bookmarkedMoments.length === 0 && (
             <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '60px 20px', color: 'var(--text-muted)', fontSize: '1rem', background: 'var(--border-glass-light)', borderRadius: '16px' }}>
               <Bookmark size={40} style={{ margin: '0 auto 16px', opacity: 0.5 }} />
@@ -201,7 +225,7 @@ export default function ProfileView({ userStats, moments, albums }) {
             </div>
           )}
 
-          {/* Settings */}
+          {/*SETTINGS */}
           {activeSubTab === 'settings' && (
             <div style={{ gridColumn: '1 / -1', padding: '48px 32px', background: 'var(--border-glass-light)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
               <h3 style={{ margin: '0 0 12px 0', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.4rem' }}>
