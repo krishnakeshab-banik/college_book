@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, MessageSquare, ChevronLeft } from 'lucide-react';
+import { Send, MessageSquare, ChevronLeft, Phone, Video, Info, Search } from 'lucide-react';
 
 export default function MessagesView({ 
   friends, 
@@ -9,6 +9,7 @@ export default function MessagesView({
   setMessages 
 }) {
   const [inputText, setInputText] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [typingFriend, setTypingFriend] = useState(null);
   const messagesEndRef = useRef(null);
 
@@ -67,34 +68,49 @@ export default function MessagesView({
     <div className={`messages-container glass ${activeChatFriend ? 'has-active-chat' : ''}`}>
       {/* Conversations List Sidebar */}
       <div className="conversations-sidebar">
-        <div className="convos-header">Conversations</div>
-        <div className="conversations-list">
-          {friends.map((friend) => {
-            const thread = messages[friend.id] || [];
-            const lastMsg = thread[thread.length - 1]?.text || friend.bio;
-            const lastTime = thread[thread.length - 1]?.time || 'Joined';
+        <div className="convos-header" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div>Conversations</div>
+          <div style={{ position: 'relative', width: '100%' }}>
+            <input 
+              type="text" 
+              className="chat-input"
+              placeholder="Search classmates..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ fontSize: '0.8rem', padding: '8px 12px 8px 32px', borderRadius: '10px', height: 'auto', width: '100%', outline: 'none' }}
+            />
+            <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+          </div>
+        </div>
+        <div className="conversations-list" style={{ marginTop: '8px' }}>
+          {friends
+            .filter(f => f.name.toLowerCase().includes(searchQuery.toLowerCase()))
+            .map((friend) => {
+              const thread = messages[friend.id] || [];
+              const lastMsg = thread[thread.length - 1]?.text || friend.bio;
+              const lastTime = thread[thread.length - 1]?.time || 'Joined';
 
-            return (
-              <div 
-                key={friend.id}
-                className={`convo-item ${activeChatFriend?.id === friend.id ? 'active' : ''}`}
-                onClick={() => setActiveChatFriend(friend)}
-              >
-                <div className="friend-avatar-container">
-                  <img src={friend.avatar} alt={friend.name} className="friend-avatar-sm" />
-                  <span className={`status-indicator ${friend.status === 'call' ? 'call' : friend.status === 'online' ? 'online' : 'offline'}`}></span>
-                </div>
-
-                <div className="convo-details">
-                  <div className="convo-name">
-                    <span>{friend.name}</span>
-                    <span className="convo-time">{lastTime}</span>
+              return (
+                <div 
+                  key={friend.id}
+                  className={`convo-item ${activeChatFriend?.id === friend.id ? 'active' : ''}`}
+                  onClick={() => setActiveChatFriend(friend)}
+                >
+                  <div className="friend-avatar-container">
+                    <img src={friend.avatar} alt={friend.name} className="friend-avatar-sm" />
+                    <span className={`status-indicator ${friend.status === 'call' ? 'call' : friend.status === 'online' ? 'online' : 'offline'}`}></span>
                   </div>
-                  <div className="convo-last-msg">{lastMsg}</div>
+
+                  <div className="convo-details">
+                    <div className="convo-name">
+                      <span>{friend.name}</span>
+                      <span className="convo-time">{lastTime}</span>
+                    </div>
+                    <div className="convo-last-msg">{lastMsg}</div>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       </div>
 
@@ -102,15 +118,30 @@ export default function MessagesView({
       {activeChatFriend ? (
         <div className="active-chat-area">
           <header className="chat-header">
-            <button className="chat-back-btn" onClick={() => setActiveChatFriend(null)}>
-              <ChevronLeft size={20} />
-            </button>
-            <img src={activeChatFriend.avatar} alt={activeChatFriend.name} className="chat-header-avatar" />
-            <div>
-              <div className="chat-header-name">{activeChatFriend.name}</div>
-              <div className="chat-header-status">
-                {typingFriend === activeChatFriend.id ? 'typing...' : activeChatFriend.statusText}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button className="chat-back-btn" onClick={() => setActiveChatFriend(null)}>
+                <ChevronLeft size={20} />
+              </button>
+              <img src={activeChatFriend.avatar} alt={activeChatFriend.name} className="chat-header-avatar" />
+              <div>
+                <div className="chat-header-name">{activeChatFriend.name}</div>
+                <div className="chat-header-status">
+                  {typingFriend === activeChatFriend.id ? 'typing...' : activeChatFriend.statusText}
+                </div>
               </div>
+            </div>
+            
+            {/* Header Actions */}
+            <div style={{ display: 'flex', gap: '16px', color: 'var(--text-secondary)' }}>
+              <button style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: '4px' }} onClick={() => alert(`Starting voice call with ${activeChatFriend.name}...`)}>
+                <Phone size={18} />
+              </button>
+              <button style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: '4px' }} onClick={() => alert(`Starting video call with ${activeChatFriend.name}...`)}>
+                <Video size={18} />
+              </button>
+              <button style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: '4px' }} onClick={() => alert(`${activeChatFriend.name} details:\nUniversity: ${activeChatFriend.university}\nBio: ${activeChatFriend.bio}`)}>
+                <Info size={18} />
+              </button>
             </div>
           </header>
 

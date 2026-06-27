@@ -214,11 +214,7 @@ export default function App() {
   };
 
   const handleViewFeaturedAlbum = () => {
-    const goaAlbum = albums.find(a => a.id === 'goa-trip-2k24');
-    if (goaAlbum) {
-      setSelectedAlbum(goaAlbum);
-      setActiveTab('albums');
-    }
+    window.location.hash = '#/albums/goa-trip-2k24';
   };
 
   const handleLikeMoment = (momentId) => {
@@ -333,8 +329,7 @@ export default function App() {
   const handleCreateAlbum = (newAlbum) => {
     setAlbums(prev => [newAlbum, ...prev]);
     setShowCreateAlbumModal(false);
-    setSelectedAlbum(newAlbum);
-    setActiveTab('albums');
+    window.location.hash = `#/albums/${newAlbum.id}`;
   };
 
   // Sync state changes to localStorage
@@ -352,7 +347,13 @@ export default function App() {
 
   useEffect(() => {
     localStorage.setItem('college_book_albums', JSON.stringify(albums));
-  }, [albums]);
+    if (selectedAlbum) {
+      const updated = albums.find(a => a.id === selectedAlbum.id);
+      if (updated) {
+        setSelectedAlbum(updated);
+      }
+    }
+  }, [albums, selectedAlbum]);
 
   useEffect(() => {
     localStorage.setItem('college_book_friends', JSON.stringify(friends));
@@ -366,14 +367,50 @@ export default function App() {
     localStorage.setItem('college_book_featured_memory', JSON.stringify(featuredMemory));
   }, [featuredMemory]);
 
+  // Routing Listener (Hash Change)
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash || '#/home';
+      const parts = hash.replace(/^#\/?/, '').split('/');
+      const tab = parts[0] || 'home';
+      const param = parts[1];
+
+      setActiveTab(tab);
+
+      if (tab === 'albums') {
+        if (param) {
+          const album = albums.find(a => a.id === param);
+          if (album) setSelectedAlbum(album);
+        } else {
+          setSelectedAlbum(null);
+        }
+      } else {
+        setSelectedAlbum(null);
+      }
+
+      if (tab === 'messages') {
+        if (param) {
+          const friend = friends.find(f => f.id === param);
+          if (friend) setActiveChatFriend(friend);
+        } else {
+          setActiveChatFriend(null);
+        }
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    // Initial check
+    handleHashChange();
+
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [albums, friends]);
+
   const handleFriendChatClick = (friend) => {
-    setActiveChatFriend(friend);
-    setActiveTab('messages');
+    window.location.hash = `#/messages/${friend.id}`;
   };
 
   const handleTrendingClick = (hashtag) => {
-    setActiveTab('explore');
-    // We will let ExploreView filter handle this automatically
+    window.location.hash = '#/explore';
   };
 
   const handleJoinSuggestedAlbum = (albumId) => {
@@ -396,7 +433,7 @@ export default function App() {
   const handleRightSearchSubmit = (e) => {
     e.preventDefault();
     if (!rightPanelSearch.trim()) return;
-    setActiveTab('explore');
+    window.location.hash = '#/explore';
   };
 
   // Render correct middle view
@@ -424,9 +461,14 @@ export default function App() {
           <AlbumsView 
             albums={albums}
             setAlbums={setAlbums}
-            onAlbumClick={(album) => setSelectedAlbum(album)}
+            friends={friends}
+            onAlbumClick={(album) => {
+              window.location.hash = `#/albums/${album.id}`;
+            }}
             selectedAlbum={selectedAlbum}
-            setSelectedAlbum={setSelectedAlbum}
+            setSelectedAlbum={(album) => {
+              window.location.hash = album ? `#/albums/${album.id}` : '#/albums';
+            }}
           />
         );
       case 'explore':
@@ -450,7 +492,9 @@ export default function App() {
           <MessagesView 
             friends={friends}
             activeChatFriend={activeChatFriend}
-            setActiveChatFriend={setActiveChatFriend}
+            setActiveChatFriend={(friend) => {
+              window.location.hash = friend ? `#/messages/${friend.id}` : '#/messages';
+            }}
             messages={messages}
             setMessages={setMessages}
           />
@@ -559,13 +603,13 @@ export default function App() {
           <span className="logo-text">CollegeBook</span>
         </div>
         <div className="mobile-header-actions">
-          <button className="mobile-action-btn" onClick={() => setActiveTab('notifications')}>
+          <button className="mobile-action-btn" onClick={() => { window.location.hash = '#/notifications'; }}>
             <BellRing size={22} />
             {notifications.filter(n => !n.read).length > 0 && (
               <span className="mobile-badge pink">{notifications.filter(n => !n.read).length}</span>
             )}
           </button>
-          <button className="mobile-action-btn" onClick={() => { setActiveTab('messages'); setActiveChatFriend(null); }}>
+          <button className="mobile-action-btn" onClick={() => { window.location.hash = '#/messages'; }}>
             <MessageCircle size={22} />
             <span className="mobile-badge">3</span>
           </button>
@@ -576,9 +620,8 @@ export default function App() {
       <Sidebar 
         activeTab={activeTab} 
         setActiveTab={(tab) => {
-          setActiveTab(tab);
-          if (tab !== 'albums') setSelectedAlbum(null);
-        }} 
+          window.location.hash = `#/${tab}`;
+        }}
         onCreateAlbumClick={() => setShowCreateAlbumModal(true)}
         pulseUsers={friends}
       />
@@ -640,7 +683,7 @@ export default function App() {
         <div>
           <div className="section-title-sm">
             <span>Active Friends</span>
-            <span className="see-all" onClick={() => setActiveTab('friends')}>See all</span>
+            <span className="see-all" onClick={() => { window.location.hash = '#/friends'; }}>See all</span>
           </div>
           <div className="friends-list-sm">
             {friends.map((friend) => (
@@ -671,7 +714,7 @@ export default function App() {
         <div>
           <div className="section-title-sm">
             <span>Trending on Campus</span>
-            <span className="see-all" onClick={() => setActiveTab('explore')}>See all</span>
+            <span className="see-all" onClick={() => { window.location.hash = '#/explore'; }}>See all</span>
           </div>
           <div className="trending-list">
             <div className="trending-item" onClick={() => handleTrendingClick('#Holi2K24')}>
@@ -704,7 +747,7 @@ export default function App() {
         <div>
           <div className="section-title-sm">
             <span>Suggested Albums</span>
-            <span className="see-all" onClick={() => setActiveTab('albums')}>See all</span>
+            <span className="see-all" onClick={() => { window.location.hash = '#/albums'; }}>See all</span>
           </div>
           
           {albums.find(a => a.id === 'spiti-valley-road-trip' && !a.isJoined) && (
@@ -767,13 +810,13 @@ export default function App() {
       <nav className="mobile-bottom-nav">
         <button 
           className={`mobile-nav-btn ${activeTab === 'home' ? 'active' : ''}`}
-          onClick={() => { setActiveTab('home'); setSelectedAlbum(null); }}
+          onClick={() => { window.location.hash = '#/home'; }}
         >
           <Home size={22} />
         </button>
         <button 
           className={`mobile-nav-btn ${activeTab === 'explore' ? 'active' : ''}`}
-          onClick={() => { setActiveTab('explore'); setSelectedAlbum(null); }}
+          onClick={() => { window.location.hash = '#/explore'; }}
         >
           <Compass size={22} />
         </button>
@@ -785,13 +828,13 @@ export default function App() {
         </button>
         <button 
           className={`mobile-nav-btn ${activeTab === 'albums' ? 'active' : ''}`}
-          onClick={() => setActiveTab('albums')}
+          onClick={() => { window.location.hash = '#/albums'; }}
         >
           <FolderHeart size={22} />
         </button>
         <button 
           className={`mobile-nav-btn ${activeTab === 'profile' ? 'active' : ''}`}
-          onClick={() => { setActiveTab('profile'); setSelectedAlbum(null); }}
+          onClick={() => { window.location.hash = '#/profile'; }}
         >
           <img 
             src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=80&q=80" 

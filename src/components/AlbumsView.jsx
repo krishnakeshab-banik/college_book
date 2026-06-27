@@ -7,13 +7,15 @@ import {
   UploadCloud, 
   Check, 
   MessageSquare,
-  Plus
+  Plus,
+  X
 } from 'lucide-react';
 import { formatTime } from '../utils/time';
 
 export default function AlbumsView({ 
   albums, 
   setAlbums, 
+  friends = [],
   onAlbumClick, 
   selectedAlbum, 
   setSelectedAlbum 
@@ -55,6 +57,13 @@ export default function AlbumsView({
   const filteredAlbums = filter === 'All' 
     ? albums 
     : albums.filter(album => album.category === filter);
+
+  const getCommentAvatar = (username) => {
+    if (username === 'Aditya Verma') return 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=80&q=80';
+    const friend = friends.find(f => f.name === username);
+    if (friend) return friend.avatar;
+    return `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(username)}`;
+  };
 
   const handleJoinAlbum = (albumId, e) => {
     e.stopPropagation();
@@ -218,12 +227,19 @@ export default function AlbumsView({
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '640px', marginTop: '12px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {commentsList.map((c, i) => (
-                <div key={i} className="glass" style={{ padding: '12px 16px', borderRadius: '12px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <span style={{ fontSize: '0.82rem', fontWeight: '700' }}>{c.user}</span>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{formatTime(c.time)}</span>
+                <div key={i} className="glass" style={{ padding: '16px', borderRadius: '16px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                  <img 
+                    src={getCommentAvatar(c.user)} 
+                    alt={c.user} 
+                    style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--border-glass-light)' }} 
+                  />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '0.85rem', fontWeight: '700' }}>{c.user}</span>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{formatTime(c.time)}</span>
+                    </div>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>{c.text}</p>
                   </div>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{c.text}</p>
                 </div>
               ))}
             </div>
@@ -247,11 +263,18 @@ export default function AlbumsView({
 
         {/* Upload Modal (Simulated) */}
         {showUploadModal && (
-          <div className="modal-overlay" onClick={() => setShowUploadModal(false)}>
+          <div className="modal-overlay" onClick={() => { setShowUploadModal(false); setNewPhotoBase64(''); setNewPhotoCaption(''); }}>
             <div className="modal-content glass" onClick={(e) => e.stopPropagation()}>
-              <h2 className="modal-title">Share a New Memory</h2>
+              <button 
+                className="modal-close-btn"
+                onClick={() => { setShowUploadModal(false); setNewPhotoBase64(''); setNewPhotoCaption(''); }}
+              >
+                <X size={16} />
+              </button>
+
+              <h2 className="modal-title" style={{ marginBottom: '20px' }}>Share a New Memory</h2>
               <form onSubmit={handleSimulatedUpload}>
-                <div className="form-group">
+                <div className="form-group" style={{ marginBottom: '16px' }}>
                   <label className="form-label">Caption / Story</label>
                   <input 
                     type="text" 
@@ -262,18 +285,40 @@ export default function AlbumsView({
                     required
                   />
                 </div>
-                <div className="form-group">
+                <div className="form-group" style={{ marginBottom: '24px' }}>
                   <label className="form-label">Select Photo</label>
-                  <input 
-                    type="file" 
-                    accept="image/*"
-                    className="form-input" 
-                    onChange={handleFileChange}
-                    required
-                  />
+                  {newPhotoBase64 ? (
+                    <div style={{ position: 'relative', width: '100%', height: '220px', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-glass-light)' }}>
+                      <img src={newPhotoBase64} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <button 
+                        type="button" 
+                        className="modal-close-btn"
+                        style={{ top: '12px', right: '12px', width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(15, 23, 42, 0.6)', color: 'white', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                        onClick={() => setNewPhotoBase64('')}
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ) : (
+                    <label 
+                      className="upload-card-btn" 
+                      style={{ width: '100%', height: '180px', border: '2px dashed var(--border-glass-light)', borderRadius: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', gap: '8px' }}
+                    >
+                      <input 
+                        type="file" 
+                        accept="image/*"
+                        style={{ display: 'none' }} 
+                        onChange={handleFileChange}
+                        required
+                      />
+                      <UploadCloud size={36} className="upload-icon" />
+                      <span style={{ fontSize: '0.88rem', fontWeight: '600', color: 'var(--text-main)' }}>Click to upload photo</span>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>PNG, JPG or WEBP (Max 5MB)</span>
+                    </label>
+                  )}
                 </div>
                 <div className="form-actions">
-                  <button type="button" className="btn-secondary" onClick={() => setShowUploadModal(false)}>
+                  <button type="button" className="btn-secondary" onClick={() => { setShowUploadModal(false); setNewPhotoBase64(''); setNewPhotoCaption(''); }}>
                     Cancel
                   </button>
                   <button type="submit" className="btn-submit">
