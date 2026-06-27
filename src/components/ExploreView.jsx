@@ -1,11 +1,46 @@
 import React, { useState } from 'react';
 import { Search, Heart, MessageCircle } from 'lucide-react';
 
+const MemoryCard = ({ memory }) => (
+  <div className="explore-card glass">
+    <img src={memory.url} alt={memory.caption} className="explore-card-img" />
+    <div className="explore-card-overlay" style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      justifyContent: 'flex-end',
+      padding: '20px' 
+    }}>
+      <span className="explore-tag" style={{ 
+        color: '#fff', 
+        textShadow: '0px 1px 2px rgba(0,0,0,0.8)',
+        fontSize: '0.9rem', 
+        fontWeight: '700'
+      }}>
+        {memory.tags[0] || '#CampusLife'}
+      </span>
+      
+      <div className="stats-container" style={{ 
+        display: 'flex', gap: '14px', marginTop: '12px', 
+        borderTop: '1px solid rgba(255, 255, 255, 0.2)', paddingTop: '8px',
+        color: '#ffffff'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem' }}>
+          <Heart size={12} fill="white" />
+          <span>{memory.likes}</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem' }}>
+          <MessageCircle size={12} fill="white" />
+          <span>{memory.comments}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 export default function ExploreView({ initialMoments, albums }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState('All');
 
-  // Extract all media items from collaborative albums to display a rich set of explore memories
   const allExploreMemories = [
     ...initialMoments.map(m => ({
       id: m.id,
@@ -25,7 +60,7 @@ export default function ExploreView({ initialMoments, albums }) {
     })))
   ];
 
-  const popularTags = ['All', '#Goa2K24', '#CampusVibes', '#HostelDiaries', '#SpitiValley', '#Trips', '#Fest2024'];
+  const popularTags = ['All', '#Milan2K25', '#CampusVibes', '#HostelDiaries', '#ChennaiNights', '#Trips', '#Aaruush2025'];
 
   const filteredMemories = allExploreMemories.filter(memory => {
     const matchesSearch = memory.caption.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -40,25 +75,23 @@ export default function ExploreView({ initialMoments, albums }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div>
-        <h1 className="section-title" style={{ fontSize: '1.6rem', marginBottom: '8px' }}>Explore Campus Memories</h1>
+        <h1 className="section-title" style={{ fontSize: '1.6rem', marginBottom: '8px', color: 'var(--primary)' }}>Explore Campus Memories</h1>
         <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
           Discover spontaneous hostel moments, travel diaries, festivals, and achievements shared across campus networks.
         </p>
       </div>
 
-      {/* Interactive Search */}
       <div className="search-container" style={{ maxWidth: '480px' }}>
         <input 
           type="text" 
           className="search-input" 
-          placeholder="Search captions, tags, albums..." 
+          placeholder="Search Milan fest, Tech Park, University Building..." 
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         <Search className="search-icon" size={18} />
       </div>
 
-      {/* Trending Tags */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <span style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-secondary)' }}>Trending Hashtags</span>
         <div className="album-filter-container">
@@ -74,45 +107,13 @@ export default function ExploreView({ initialMoments, albums }) {
         </div>
       </div>
 
-      {/* Explore Grid */}
       <div className="explore-grid">
         {filteredMemories.map((memory) => (
-          <div key={memory.id} className="explore-card glass">
-            <img src={memory.url} alt={memory.caption} className="explore-card-img" />
-            <div className="explore-card-overlay">
-              <span className="explore-tag">
-                {memory.tags[0] || '#CampusLife'}
-              </span>
-              <p className="explore-title">{memory.caption}</p>
-              
-              {/* Overlay Hover stats */}
-              <div style={{ 
-                display: 'flex', 
-                gap: '14px', 
-                marginTop: '10px', 
-                borderTop: '1px solid rgba(255, 255, 255, 0.1)', 
-                paddingTop: '8px' 
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.78rem' }}>
-                  <Heart size={12} fill="white" />
-                  <span>{memory.likes}</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.78rem' }}>
-                  <MessageCircle size={12} fill="white" />
-                  <span>{memory.comments}</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <MemoryCard key={memory.id} memory={memory} />
         ))}
 
         {filteredMemories.length === 0 && (
-          <div style={{ 
-            gridColumn: 'span 3', 
-            textAlign: 'center', 
-            padding: '48px', 
-            color: 'var(--text-muted)' 
-          }}>
+          <div style={{ gridColumn: 'span 3', textAlign: 'center', padding: '48px', color: 'var(--text-muted)' }}>
             No memories match your search filter. Try another keyword!
           </div>
         )}
