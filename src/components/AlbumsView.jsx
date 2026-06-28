@@ -337,65 +337,78 @@ export default function AlbumsView({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1 className="section-title" style={{ fontSize: '1.6rem' }}>Collaborative Albums</h1>
+        <div>
+          <h2 style={{ fontSize: '26px', fontWeight: '800' }}>Collaborative Memory Archives</h2>
+          <p style={{ color: 'var(--text-muted)' }}>Organized group galleries by university trip and fest</p>
+        </div>
       </div>
 
       {/* Album Filters */}
-      <div className="album-filter-container">
+      <div className="album-filter-container" style={{ display: 'flex', gap: '8px' }}>
         {categories.map((cat) => (
           <button 
             key={cat} 
             className={`filter-chip ${filter === cat ? 'active' : ''}`}
             onClick={() => setFilter(cat)}
+            style={{ padding: '6px 16px', borderRadius: '100px', border: '1px solid var(--border-default)', background: filter === cat ? 'var(--obsidian)' : 'transparent', color: filter === cat ? 'white' : 'var(--text-secondary)', cursor: 'pointer', transition: 'all 0.2s', fontSize: '13px', fontWeight: '600' }}
           >
             {cat}
           </button>
         ))}
       </div>
 
-      {/* Albums Grid */}
-      <div className="albums-grid">
-        {filteredAlbums.map((album) => (
-          <div 
-            key={album.id} 
-            className="album-card glass glass-hover"
-            onClick={() => onAlbumClick(album)}
-          >
-            <div className="album-cover-container">
-              <img 
-                src={album.coverImage} 
-                alt={album.title} 
-                className="album-cover-img" 
-              />
-              <span className="album-category-badge">{album.category}</span>
-            </div>
+      {/* Albums Grid (Folder Style) */}
+      <div className="albums-container">
+        {filteredAlbums.map((album) => {
+          // Select emoji based on category or name
+          let emoji = '📂';
+          if (album.category === 'Trips') emoji = '🏖️';
+          else if (album.category === 'Festivals') emoji = '🎤';
+          else if (album.category === 'Hostel') emoji = '🏢';
+          else if (album.title.toLowerCase().includes('sunset')) emoji = '🌅';
+          else if (album.title.toLowerCase().includes('concert')) emoji = '🎸';
 
-            <div className="album-card-body">
-              <h3 className="album-card-title">{album.title}</h3>
-              <p className="album-card-desc">{album.description}</p>
+          // Choose background color based on category
+          let folderBg = '#eff6ff'; // Blue
+          if (album.category === 'Festivals') folderBg = '#fef3c7'; // Gold/Yellow
+          else if (album.category === 'Hostel') folderBg = '#ecfdf5'; // Emerald/Green
+
+          return (
+            <div 
+              key={album.id} 
+              className="album-folder"
+              onClick={() => onAlbumClick(album)}
+            >
+              <div style={{ height: '160px', borderRadius: '12px', background: folderBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '56px', marginBottom: '16px', userSelect: 'none' }}>
+                {emoji}
+              </div>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--obsidian)' }}>{album.title}</h3>
+              <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                {album.description.split('.')[0]} • {album.contributorCount} Contributors
+              </p>
               
-              <div className="album-card-footer">
-                <span className="album-members-text">
-                  {album.contributorCount} Contributors
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px' }}>
+                <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--primary)', background: '#eff6ff', padding: '2px 8px', borderRadius: '100px' }}>
+                  {album.category}
                 </span>
-
+                
                 {album.isJoined ? (
-                  <span className="joined-label-outline">
-                    <Check size={14} />
-                    <span>Collaborating</span>
+                  <span style={{ fontSize: '11px', color: 'var(--emerald)', display: 'inline-flex', alignItems: 'center', gap: '3px', fontWeight: '600' }}>
+                    <Check size={12} />
+                    <span>Joined</span>
                   </span>
                 ) : (
                   <button 
-                    className="join-album-btn-outline"
                     onClick={(e) => handleJoinAlbum(album.id, e)}
+                    style={{ background: 'transparent', border: 'none', color: 'var(--primary)', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}
                   >
-                    Join Album
+                    + Join
                   </button>
                 )}
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

@@ -24,7 +24,7 @@ import {
 } from './MockData';
 
 // Components
-import Sidebar from './components/Sidebar';
+import HeaderDock from './components/HeaderDock';
 import MainFeed from './components/MainFeed';
 import StoryViewer from './components/StoryViewer';
 import AlbumsView from './components/AlbumsView';
@@ -454,6 +454,14 @@ export default function App() {
             onBookmarkMoment={handleBookmarkMoment}
             onComposeMoment={handleComposeMoment}
             onMomentClick={setActivePostDetails}
+            friends={friends}
+            onFriendChatClick={handleFriendChatClick}
+            albums={albums}
+            onJoinSuggestedAlbum={handleJoinSuggestedAlbum}
+            onTrendingClick={handleTrendingClick}
+            onRightSearchSubmit={handleRightSearchSubmit}
+            rightPanelSearch={rightPanelSearch}
+            setRightPanelSearch={setRightPanelSearch}
           />
         );
       case 'albums':
@@ -595,178 +603,19 @@ export default function App() {
   };
 
   return (
-    <div className="app-container">
-      {/* Mobile Top Header (Instagram style) */}
-      <header className="mobile-header">
-        <div className="mobile-logo-container">
-          <Sparkles className="logo-icon" size={20} />
-          <span className="logo-text">CollegeBook</span>
-        </div>
-        <div className="mobile-header-actions">
-          <button className="mobile-action-btn" onClick={() => { window.location.hash = '#/notifications'; }}>
-            <BellRing size={22} />
-            {notifications.filter(n => !n.read).length > 0 && (
-              <span className="mobile-badge pink">{notifications.filter(n => !n.read).length}</span>
-            )}
-          </button>
-          <button className="mobile-action-btn" onClick={() => { window.location.hash = '#/messages'; }}>
-            <MessageCircle size={22} />
-            <span className="mobile-badge">3</span>
-          </button>
-        </div>
-      </header>
-
-      {/* Sidebar Navigation */}
-      <Sidebar 
+    <div className="app-container-studio">
+      {/* Floating Dynamic Island Header */}
+      <HeaderDock 
         activeTab={activeTab} 
         setActiveTab={(tab) => {
           window.location.hash = `#/${tab}`;
         }}
-        onCreateAlbumClick={() => setShowCreateAlbumModal(true)}
-        pulseUsers={friends}
       />
 
-      {/* Main middle feed view */}
-      <main className="main-content-wrapper" style={{ flex: 1 }}>
+      {/* Main Studio Canvas */}
+      <div className="canvas-container">
         {renderMiddleSection()}
-      </main>
-
-      {/* Right Sidebar Widgets Panel */}
-      <aside className="right-panel glass">
-        {/* Search */}
-        <form onSubmit={handleRightSearchSubmit} className="search-container">
-          <input 
-            type="text" 
-            className="search-input" 
-            placeholder="Search memories, tags..." 
-            value={rightPanelSearch}
-            onChange={(e) => setRightPanelSearch(e.target.value)}
-          />
-          <Search className="search-icon" size={18} />
-          <span className="search-shortcut">⌘ K</span>
-        </form>
-
-        {/* Aditya profile summary */}
-        <div className="profile-card glass">
-          <div className="profile-header-sm">
-            <img 
-              src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80" 
-              alt="Aditya Verma" 
-              className="profile-avatar-lg" 
-            />
-            <div>
-              <div style={{ fontWeight: '700', fontSize: '0.95rem' }}>Aditya Verma</div>
-              <div className="profile-univ">Lovely Professional University</div>
-            </div>
-          </div>
-          <div className="profile-stats-grid">
-            <div className="stat-item">
-              <span className="stat-val">24</span>
-              <span className="stat-lbl">Albums</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-val">482</span>
-              <span className="stat-lbl">Memories</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-val">320</span>
-              <span className="stat-lbl">Friends</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-val">1.2k</span>
-              <span className="stat-lbl">Followers</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Active Friends */}
-        <div>
-          <div className="section-title-sm">
-            <span>Active Friends</span>
-            <span className="see-all" onClick={() => { window.location.hash = '#/friends'; }}>See all</span>
-          </div>
-          <div className="friends-list-sm">
-            {friends.map((friend) => (
-              <div 
-                key={friend.id} 
-                className="friend-item-sm"
-                onClick={() => handleFriendChatClick(friend)}
-              >
-                <div className="friend-avatar-container">
-                  <img src={friend.avatar} alt={friend.name} className="friend-avatar-sm" />
-                  <span className={`status-indicator ${friend.status === 'call' ? 'call' : friend.status === 'online' ? 'online' : 'offline'}`}></span>
-                </div>
-                <div className="friend-info-sm">
-                  <div className="friend-name-sm">{friend.name}</div>
-                  <div className="friend-status-text">
-                    {friend.status === 'call' ? 'In a call' : friend.status === 'online' ? 'Online' : 'Active 5m ago'}
-                  </div>
-                </div>
-                <button className="chat-btn-sm">
-                  <MessageCircle size={14} />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Trending on Campus */}
-        <div>
-          <div className="section-title-sm">
-            <span>Trending on Campus</span>
-            <span className="see-all" onClick={() => { window.location.hash = '#/explore'; }}>See all</span>
-          </div>
-          <div className="trending-list">
-            <div className="trending-item" onClick={() => handleTrendingClick('#Holi2K24')}>
-              <div className="trending-details">
-                <span className="trending-name">Holi 2K24</span>
-                <span className="trending-count">1.8k memories</span>
-              </div>
-              <TrendingUp size={14} className="trend-arrow" />
-            </div>
-            
-            <div className="trending-item" onClick={() => handleTrendingClick('#CollegeVibes')}>
-              <div className="trending-details">
-                <span className="trending-name">#CollegeVibes</span>
-                <span className="trending-count">12.5k memories</span>
-              </div>
-              <TrendingUp size={14} className="trend-arrow" />
-            </div>
-
-            <div className="trending-item" onClick={() => handleTrendingClick('#TechFest2024')}>
-              <div className="trending-details">
-                <span className="trending-name">Tech Fest 2024</span>
-                <span className="trending-count">968 memories</span>
-              </div>
-              <TrendingUp size={14} className="trend-arrow" />
-            </div>
-          </div>
-        </div>
-
-        {/* Suggested Albums */}
-        <div>
-          <div className="section-title-sm">
-            <span>Suggested Albums</span>
-            <span className="see-all" onClick={() => { window.location.hash = '#/albums'; }}>See all</span>
-          </div>
-          
-          {albums.find(a => a.id === 'spiti-valley-road-trip' && !a.isJoined) && (
-            <div className="suggested-album-card glass">
-              <img src="/assets/lake_view.png" alt="Suggested Album" className="suggested-cover" />
-              <div className="suggested-info">
-                <div className="suggested-title">Spiti Valley Road Trip</div>
-                <div className="suggested-subtitle">21 contributors</div>
-              </div>
-              <button 
-                className="join-btn"
-                onClick={() => handleJoinSuggestedAlbum('spiti-valley-road-trip')}
-              >
-                Join
-              </button>
-            </div>
-          )}
-        </div>
-      </aside>
+      </div>
 
       {/* Global Story Viewer Overlay */}
       {activeStory && (
@@ -805,44 +654,6 @@ export default function App() {
           onAddStory={handleAddStory}
         />
       )}
-
-      {/* Mobile Bottom Navigation Bar (Instagram style) */}
-      <nav className="mobile-bottom-nav">
-        <button 
-          className={`mobile-nav-btn ${activeTab === 'home' ? 'active' : ''}`}
-          onClick={() => { window.location.hash = '#/home'; }}
-        >
-          <Home size={22} />
-        </button>
-        <button 
-          className={`mobile-nav-btn ${activeTab === 'explore' ? 'active' : ''}`}
-          onClick={() => { window.location.hash = '#/explore'; }}
-        >
-          <Compass size={22} />
-        </button>
-        <button 
-          className="mobile-nav-btn create"
-          onClick={() => setShowCreateAlbumModal(true)}
-        >
-          <PlusCircle size={24} />
-        </button>
-        <button 
-          className={`mobile-nav-btn ${activeTab === 'albums' ? 'active' : ''}`}
-          onClick={() => { window.location.hash = '#/albums'; }}
-        >
-          <FolderHeart size={22} />
-        </button>
-        <button 
-          className={`mobile-nav-btn ${activeTab === 'profile' ? 'active' : ''}`}
-          onClick={() => { window.location.hash = '#/profile'; }}
-        >
-          <img 
-            src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=80&q=80" 
-            alt="Profile" 
-            className="mobile-profile-avatar"
-          />
-        </button>
-      </nav>
     </div>
   );
 }

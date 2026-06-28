@@ -1,36 +1,52 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --bg-cosmic: #ffffff;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f8fafc;
-  --bg-input: #f1f5f9;
+  --bg-page: #f5f7fa;
+  --bg-surface: #ffffff;
+  --bg-subtle: #f8fafc;
+  --bg-muted: #f1f5f9;
   
-  --primary: #4f46e5;
-  --primary-hover: #3730a3;
-  --primary-glow: rgba(79, 70, 229, 0.12);
-  
-  --accent: #db2777;
-  --accent-glow: rgba(219, 39, 119, 0.12);
-  
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  
-  --border-glass: rgba(15, 23, 42, 0.08);
-  --border-glass-light: rgba(15, 23, 42, 0.12);
-  --border-active: #4f46e5;
+  --border-subtle: rgba(15, 23, 42, 0.06);
+  --border-default: rgba(15, 23, 42, 0.1);
+  --border-hover: rgba(37, 99, 235, 0.3);
   
   --text-main: #0f172a;
   --text-secondary: #475569;
   --text-muted: #64748b;
+  --text-dim: #94a3b8;
   
-  --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --obsidian: #0c1322;
+  --rose: #e11d48;
+  --emerald: #059669;
+  --amber: #d97706;
   
-  --shadow-neon: 0 4px 12px rgba(79, 70, 229, 0.06);
-  --shadow-neon-pink: 0 4px 12px rgba(219, 39, 119, 0.06);
+  --shadow-subtle: 0 2px 4px rgba(15, 23, 42, 0.02), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-card: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 4px 10px -5px rgba(15, 23, 42, 0.02);
+  --shadow-float: 0 20px 35px -10px rgba(15, 23, 42, 0.07);
+  --shadow-island: 0 12px 32px -4px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(15, 23, 42, 0.03);
   
+  --font-stack: 'Outfit', -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Display", sans-serif;
   --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Backward-compatibility aliases */
+  --bg-cosmic: var(--bg-page);
+  --bg-card: var(--bg-surface);
+  --bg-card-hover: var(--bg-subtle);
+  --bg-input: var(--bg-muted);
+  --primary-glow: rgba(37, 99, 235, 0.1);
+  --accent: var(--rose);
+  --accent-glow: rgba(225, 29, 72, 0.1);
+  --success: var(--emerald);
+  --warning: var(--amber);
+  --danger: var(--rose);
+  --border-glass: var(--border-subtle);
+  --border-glass-light: var(--border-default);
+  --border-active: var(--primary);
+  --font-family: var(--font-stack);
+  --shadow-neon: var(--shadow-subtle);
+  --shadow-neon-pink: var(--shadow-subtle);
 }
 
 * {
@@ -2573,4 +2589,415 @@ body {
   grid-template-columns: 1fr;
   min-height: 400px;
   max-height: 480px;
+}
+
+/* --- FLOATING PEARL GLASS DYNAMIC ISLAND HEADER --- */
+.header-dock-container {
+  position: fixed;
+  top: 20px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 1000;
+  pointer-events: none;
+}
+.header-dock {
+  pointer-events: auto;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-default);
+  padding: 6px 10px;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: var(--shadow-island);
+  max-width: 95vw;
+}
+.brand-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 16px 6px 8px;
+  border-right: 1px solid var(--border-default);
+}
+.brand-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--obsidian);
+  color: white;
+  font-weight: 800;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.brand-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--obsidian);
+  letter-spacing: -0.4px;
+}
+
+.nav-pills {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+}
+.nav-pills::-webkit-scrollbar {
+  display: none;
+}
+.nav-pill {
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.nav-pill:hover {
+  color: var(--obsidian);
+  background: var(--bg-subtle);
+}
+.nav-pill.active {
+  background: var(--obsidian);
+  color: white;
+  box-shadow: 0 4px 12px rgba(12, 19, 34, 0.15);
+}
+
+.user-badge-pill {
+  padding: 4px 14px 4px 8px;
+  border-left: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.user-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--obsidian);
+}
+
+/* --- MASTER STUDIO CANVAS --- */
+.canvas-container {
+  max-width: 1200px;
+  margin: 108px auto 0 auto;
+  padding: 0 24px 96px 24px;
+}
+
+/* --- 1. HOME FEED: CLEAN POLAROID TRAY --- */
+.polaroid-section {
+  margin-bottom: 36px;
+}
+.section-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--obsidian);
+  letter-spacing: -0.3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tech-badge {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+  background: #eff6ff;
+  padding: 4px 12px;
+  border-radius: 100px;
+  border: 1px solid #dbeafe;
+}
+
+.polaroid-grid {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 4px 4px 12px 4px;
+}
+.polaroid-grid::-webkit-scrollbar {
+  height: 6px;
+}
+.polaroid-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+.polaroid-grid::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 10px;
+}
+.clean-polaroid {
+  min-width: 146px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 10px 10px 14px 10px;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s;
+}
+.clean-polaroid:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-float);
+  border-color: var(--border-hover);
+}
+.polaroid-img {
+  width: 100%;
+  height: 156px;
+  border-radius: 10px;
+  background: #e2e8f0;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.polaroid-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+  text-align: center;
+  margin-top: 10px;
+  display: block;
+}
+.polaroid-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+  display: block;
+  margin-top: 2px;
+}
+.status-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background: var(--rose);
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px white;
+}
+
+/* --- MAIN STUDIO FEED LAYOUT --- */
+.feed-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 36px;
+  align-items: start;
+}
+
+@media (max-width: 968px) {
+  .feed-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.studio-post {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 32px;
+}
+.post-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.author-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.avatar-sq {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--obsidian);
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.verified-pill {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--emerald);
+  background: #d1fae5;
+  padding: 2px 10px;
+  border-radius: 100px;
+}
+
+.media-stage {
+  width: 100%;
+  height: 480px;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  background: #0f172a;
+}
+.location-badge {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 10;
+}
+
+.reaction-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+}
+.btn-minimal {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-minimal:hover {
+  background: #eff6ff;
+  color: var(--primary);
+  border-color: #bfdbfe;
+}
+
+/* WIDGETS */
+.clean-widget {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 24px;
+}
+.widget-head {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--obsidian);
+  margin-bottom: 16px;
+}
+.trend-row {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.trend-row:last-child { border-bottom: none; }
+
+/* --- MODULE 3: COLLABORATIVE ALBUMS --- */
+.albums-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 24px;
+}
+@media (max-width: 768px) {
+  .albums-container {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+.album-folder {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+.album-folder:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-float);
+}
+
+/* --- MODULE 6: FIND A FRIEND --- */
+.match-card-clean {
+  max-width: 420px;
+  margin: 32px auto;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: var(--shadow-float);
+  text-align: center;
+}
+
+/* --- MODULE 7: MESSAGES --- */
+.chat-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 24px;
+  height: 600px;
+  box-shadow: var(--shadow-card);
+  margin-top: 20px;
+  overflow: hidden;
+}
+
+.btn-solid {
+  background: var(--obsidian);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-solid:hover { background: var(--primary); }
+
+/* Serene overlays */
+.app-container-studio {
+  background-color: var(--bg-page);
+  min-height: 100vh;
 }
